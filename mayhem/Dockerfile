@@ -18,4 +18,6 @@ RUN go install \
 RUN buf generate --path ./proto/arithmetic/arithmetic.proto
 
 EXPOSE 8090
+ENV GRPC_TRACE=all
+ENV GRPC_VERBOSITY=debug
 CMD ["go", "run", "main.go"]

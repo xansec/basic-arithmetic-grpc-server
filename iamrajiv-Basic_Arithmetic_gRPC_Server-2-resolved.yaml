@@ -1,0 +1,127 @@
+swagger: "2.0"
+info:
+  version: "2"
+  title: arithmetic/arithmetic.proto
+tags:
+- name: Arithmetic
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /v1/arithmetic/add:
+    post:
+      tags:
+      - Arithmetic
+      operationId: Arithmetic_Add
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/arithmeticRequest'
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/arithmeticResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+  /v1/arithmetic/div:
+    post:
+      tags:
+      - Arithmetic
+      operationId: Arithmetic_Divide
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/arithmeticRequest'
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/arithmeticResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+  /v1/arithmetic/mul:
+    post:
+      tags:
+      - Arithmetic
+      operationId: Arithmetic_Multiply
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/arithmeticRequest'
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/arithmeticResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+  /v1/arithmetic/sub:
+    post:
+      tags:
+      - Arithmetic
+      operationId: Arithmetic_Subtract
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/arithmeticRequest'
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/arithmeticResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+definitions:
+  arithmeticRequest:
+    type: object
+    properties:
+      a:
+        type: string
+        format: int64
+      b:
+        type: string
+        format: int64
+    title: The request message containing the two integers
+  arithmeticResponse:
+    type: object
+    properties:
+      result:
+        type: string
+        format: int64
+    title: The response message containing the result
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+    additionalProperties: {}
+  rpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/protobufAny'

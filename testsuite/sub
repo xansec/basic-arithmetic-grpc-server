@@ -1,0 +1,9 @@
+POST /v1/arithmetic/sub HTTP/1.1
+Host: 172.17.0.2
+User-Agent: curl/7.3590
+Accept: application/json
+Content-Type: application/json
+Content-Length: 19
+Connection: close
+
+{"a":"5", "b":"29"}
