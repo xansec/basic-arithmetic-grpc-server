@@ -1,6 +1,7 @@
 module github.com/iamrajiv/basic-arithmetic-grpc-server
 
-go 1.17
+
+// go 1.17
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2

@@ -13,6 +13,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	pb "github.com/iamrajiv/basic-arithmetic-grpc-server/proto/arithmetic"
+
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type server struct {
@@ -55,7 +61,33 @@ func (*server) Subtract(_ context.Context, request *pb.Request) (*pb.Response, e
 	return &pb.Response{Result: result}, nil
 }
 
+func initTracing() func() {
+	exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
+	if err != nil {
+		log.Fatalf("failed to create stdout exporter: %v", err)
+	}
+
+	// Create a simple span processor that writes to the exporter.
+	bsp := sdktrace.NewBatchSpanProcessor(exporter)
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(bsp))
+	otel.SetTracerProvider(tp)
+
+	// Set the global propagator to use W3C Trace Context.
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	// Return a function to stop the tracer provider.
+	return func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Fatalf("failed to shut down tracer provider: %v", err)
+		}
+	}
+}
+
 func main() {
+	// Set up tracing
+	stopTracing := initTracing()
+	defer stopTracing()
+
 	// Create a listener on TCP port
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -79,6 +111,7 @@ func main() {
 		"0.0.0.0:8080",
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
 	)
 	if err != nil {
 		log.Fatalln("Failed to dial server:", err)
